@@ -2,6 +2,7 @@ import javafx.util.Pair;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * ---------------------------------------
@@ -13,7 +14,7 @@ import java.util.Map;
  * ---------------------------------------
  */
 public class PriceList {
-    private Map<Long, Product> productMap;
+    private Map productMap = new TreeMap<Long, Product>();
     private long id;
 
     public void add(Product product) {
@@ -29,7 +30,7 @@ public class PriceList {
     }
 
     public Product get(int id) {
-        return productMap.get(id);
+        return (Product) productMap.get(id);
     }
 
     public void remove(int key) {
@@ -40,7 +41,7 @@ public class PriceList {
         double price = 0.0;
         double itPrice;
         for (Pair pair : list) {
-            itPrice = productMap.get(pair.getKey()).getPrice() * (Double) pair.getKey();
+            itPrice = ((Product) productMap.get(pair.getKey())).getPrice() * (Double) pair.getKey();
             price += itPrice;
         }
         return price;

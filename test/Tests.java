@@ -3,7 +3,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 
-
 /**
  * ---------------------------------------
  * Created by Hiraev Malik on 09.02.17.
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertEquals;
  * ---------------------------------------
  */
 
-public class Tests{
+public class Tests {
     PriceList priceList = new PriceList();
     Product sausage = new Product("Колбаса", 330.40);
     Product carrot = new Product("Морковь", 20.80);
@@ -23,12 +22,14 @@ public class Tests{
     Product cereals = new Product("Гречневые хлопья", 165.44);
 
     @Test
-    void Test() {
+    public void Test() {
         priceList.add(sausage);
         priceList.add(carrot);
         priceList.add(cheese);
         priceList.add(bread);
         priceList.add(cereals);
-        assertEquals(sausage, priceList.get(0));
+        System.out.println(sausage.getName() + "dd");
+        System.out.println(((Product) priceList.get(1)).getName());
+        assertEquals(sausage, priceList.get(1));
     }
 }
