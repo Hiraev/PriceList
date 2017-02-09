@@ -21,6 +21,17 @@ public class PriceList {
         id++;
     }
 
+    public void add(List<Product> products) {
+        for (Product product : products) {
+            productMap.put(id, product);
+            id++;
+        }
+    }
+
+    public Product get(int id) {
+        return productMap.get(id);
+    }
+
     public void remove(int key) {
         productMap.remove(key);
     }
@@ -29,42 +40,42 @@ public class PriceList {
         double price = 0.0;
         double itPrice;
         for (Pair pair : list) {
-            itPrice = productMap.get(pair.getKey()).price * (Double) pair.getKey();
+            itPrice = productMap.get(pair.getKey()).getPrice() * (Double) pair.getKey();
             price += itPrice;
         }
         return price;
     }
+}
 
-    class Product {
-        private double price;
-        private String name;
+class Product {
+    private double price;
+    private String name;
 
-        public Product() {
+    public Product() {
+    }
+
+    public Product(String name, double price) {
+        if (price > 0.0) {
+            this.price = price;
         }
+        this.name = name;
+    }
 
-        public Product(String name, double price) {
-            if (price > 0.0) {
-                this.price = price;
-            }
-            this.name = name;
-        }
+    public double getPrice() {
+        return price;
+    }
 
-        public double getPrice() {
-            return price;
+    public void setPrice(double price) {
+        if (price > 0.0) {
+            this.price = price;
         }
+    }
 
-        public void setPrice(double price) {
-            if (price > 0.0) {
-                this.price = price;
-            }
-        }
+    public String getName() {
+        return name;
+    }
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
+    public void setName(String name) {
+        this.name = name;
     }
 }
