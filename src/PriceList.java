@@ -67,21 +67,22 @@ public class PriceList {
     }
 
 
-        public double calculate(Pair<Long, Integer>... list) {
-            double price = 0;
-            for (Pair product : list) {
+    public double calculate(Pair<Long, Integer>... list) {
+        double price = 0;
+        for (Pair product : list) {
 
-                //Почему следующая строчка не компилируется?
-                long key = (Long) product.getKey();
-                Product itProduct = (Product) productMap.get(key);
-                double itPrice = itProduct.getPrice();
-                int quantity = (Integer) product.getValue();
-                if (productMap.containsKey(product.getKey())) {
-                    price += itPrice * quantity;
-                }
+            //Все, разобрался. Проект готов!
+            int quantity = (Integer) product.getValue();
+            long key = (Integer) (product.getKey());
+            Product itProduct = (Product) productMap.get(key);
+            double itPrice = itProduct.getPrice();
+
+            if (productMap.containsKey(key)) {
+                price += itPrice * quantity;
             }
-            return price;
         }
+        return price;
+    }
 
     //Вспомогательный класс
     private class Product {

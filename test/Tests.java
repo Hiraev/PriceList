@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 
@@ -18,8 +19,8 @@ public class Tests {
     PriceList priceList = new PriceList();
     //Покупки
     Pair firstPurchase = new Pair(1001, 2);
-    Pair secondPurchase = new Pair(1003, 5);
-    Pair thirdPurchase = new Pair(1003, 5);
+    Pair secondPurchase = new Pair(1002, 5);
+    Pair thirdPurchase = new Pair(1003, 3);
 
 
     //Продукты
@@ -86,6 +87,14 @@ public class Tests {
     }
 
     @Test
+    public void getProduct() {
+        assertEquals(productNameOne + " - " + priceOne, priceList.getProduct(1001));
+        assertEquals(productNameTwo + " - " + priceTwo, priceList.getProduct(1002));
+        assertEquals(productNameThree + " - " + priceThree, priceList.getProduct(1003));
+        assertEquals("Error", priceList.getProduct(12345677));
+    }
+
+    @Test
     public void setProductPrice() {
         assertEquals(0, priceList.setProductPrice(1005, priceFive));
         assertEquals(priceFive, priceList.getProductPrice(1005), 1e-3);
@@ -116,12 +125,12 @@ public class Tests {
     @Test
     public void calculate() {
         //Сумма покупок
-        double sum1 = priceOne*2+priceTwo*5+priceThree*5;
-        double sum2 = priceOne*2+priceTwo*5;
-        double sum3 = priceTwo*5;
-        assertEquals(sum1,priceList.calculate(firstPurchase,secondPurchase,thirdPurchase), 1e-3);
-        assertEquals(sum2,priceList.calculate(firstPurchase,secondPurchase), 1e-3);
-        assertEquals(sum3,priceList.calculate(secondPurchase), 1e-3);
+        double sum1 = priceOne * 2 + priceTwo * 5 + priceThree * 3;
+        double sum2 = priceOne * 2 + priceTwo * 5;
+        double sum3 = priceTwo * 5;
+        assertEquals(sum1, priceList.calculate(firstPurchase, secondPurchase, thirdPurchase), 1e-3);
+        assertEquals(sum2, priceList.calculate(firstPurchase, secondPurchase), 1e-3);
+        assertEquals(sum3, priceList.calculate(secondPurchase), 1e-3);
     }
 
 }
