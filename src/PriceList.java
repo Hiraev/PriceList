@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.TreeMap;
 
 /**
@@ -64,20 +66,23 @@ public class PriceList {
         return -1;
     }
 
-    /*
+
         public double calculate(Pair<Long, Integer>... list) {
             double price = 0;
             for (Pair product : list) {
+
                 //Почему следующая строчка не компилируется?
-                long id = product.getKey();
+                long key = (Long) product.getKey();
+                Product itProduct = (Product) productMap.get(key);
+                double itPrice = itProduct.getPrice();
                 int quantity = (Integer) product.getValue();
                 if (productMap.containsKey(product.getKey())) {
-                    price += ((Product) productMap.get(product.getKey())).getPrice() * (Integer) product.getValue();
+                    price += itPrice * quantity;
                 }
             }
             return price;
         }
-    */
+
     //Вспомогательный класс
     private class Product {
         private double price;

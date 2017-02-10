@@ -112,7 +112,7 @@ public class Tests {
         assertEquals("Error", priceList.getProductName(1007));
         assertEquals(-1, priceList.removeProduct(74892));
     }
-/*
+
     @Test
     public void calculate() {
         //Сумма покупок
@@ -123,5 +123,5 @@ public class Tests {
         assertEquals(sum2,priceList.calculate(firstPurchase,secondPurchase), 1e-3);
         assertEquals(sum3,priceList.calculate(secondPurchase), 1e-3);
     }
-    */
+
 }
