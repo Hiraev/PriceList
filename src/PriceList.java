@@ -94,9 +94,7 @@ public class PriceList {
         }
 
         Product(String name, double price) {
-            if (price > 0.0) {
-                this.price = price;
-            }
+            this.price = price;
             this.name = name;
         }
 
@@ -105,9 +103,7 @@ public class PriceList {
         }
 
         void setPrice(double price) {
-            if (price > 0.0) {
-                this.price = price;
-            }
+            this.price = price;
         }
 
         String getName() {
