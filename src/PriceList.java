@@ -1,5 +1,7 @@
 import javafx.util.Pair;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 /**
@@ -12,71 +14,69 @@ import java.util.TreeMap;
  * ---------------------------------------
  */
 
-public class PriceList {
-    private TreeMap productMap = new TreeMap<Long, Product>();
+public final class PriceList {
+    private final Map<Long, Product> productMap = new TreeMap<>();
 
-    public int add(long id, String name, double price) {
-        if (productMap.containsKey(id) | price < 0) return -1;
+    public boolean add(long id, String name, double price) {
+        if (price < 0) throw new IllegalArgumentException();
+        if (productMap.containsKey(id)) return false;
         productMap.put(id, new Product(name, price));
-        return 0;
+        return true;
     }
 
-    public int add(long id, String name) {
-        if (productMap.containsKey(id)) return -1;
+    public boolean add(long id, String name) {
+        if (productMap.containsKey(id)) return false;
         productMap.put(id, new Product(name));
-        return 0;
+        return true;
     }
 
     public String getProduct(long id) {
-        if (!productMap.containsKey(id)) return "Error";
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
         return productMap.get(id).toString();
     }
 
     public String getProductName(long id) {
-        if (productMap.containsKey(id)) return ((Product) productMap.get(id)).getName();
-        return "Error";
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
+        return productMap.get(id).getName();
     }
 
     public double getProductPrice(long id) {
-        if (productMap.containsKey(id)) return ((Product) productMap.get(id)).getPrice();
-        return -1;
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
+        if (productMap.get(id).getPrice() == null) throw new IllegalStateException("Цена для "
+                + productMap.get(id).getName() + " еще не задана");
+        return (productMap.get(id)).getPrice();
     }
 
-    public int setProductName(long id, String name) {
-        if (productMap.containsKey(id)) {
-            ((Product) productMap.get(id)).setName(name);
-            return 0;
-        }
-        return -1;
+    public boolean setProductName(long id, String name) {
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
+        (productMap.get(id)).setName(name);
+        return true;
     }
 
-    public int setProductPrice(long id, double price) {
-        if (productMap.containsKey(id) & price > 0) {
-            ((Product) productMap.get(id)).setPrice(price);
-            return 0;
-        }
-        return -1;
+    public boolean setProductPrice(long id, Double price) {
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
+        if (price < 0) return false;
+        (productMap.get(id)).setPrice(price);
+        return true;
     }
 
-    public int removeProduct(long id) {
-        if (productMap.containsKey(id)) {
-            productMap.remove(id);
-            return 0;
-        }
-        return -1;
+    public boolean removeProduct(long id) {
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
+        productMap.remove(id);
+        return true;
     }
 
 
     public double calculate(Pair<Long, Integer>... list) {
         double price = 0;
-        for (Pair product : list) {
-
-            //Все, разобрался. Проект готов!
-            int quantity = (Integer) product.getValue();
-            long key = (Integer) (product.getKey());
-            Product itProduct = (Product) productMap.get(key);
-            double itPrice = itProduct.getPrice();
-
+        for (Pair<Long, Integer> product : list) {
+            int quantity = product.getValue();
+            long key = product.getKey();
+            if (!productMap.containsKey(key)) throw new NoSuchElementException();
+            Product itProduct = productMap.get(key);
+            Double itPrice = itProduct.getPrice();
+            if (itPrice == null) throw new IllegalStateException("Цена для "
+                    + itProduct.getName() + " еще не задана");
             if (productMap.containsKey(key)) {
                 price += itPrice * quantity;
             }
@@ -84,25 +84,29 @@ public class PriceList {
         return price;
     }
 
+    public int getSize() {
+        return productMap.size();
+    }
+
     //Вспомогательный класс
     private class Product {
-        private double price;
+        private Double price;
         private String name;
 
         Product(String name) {
             this.name = name;
         }
 
-        Product(String name, double price) {
+        Product(String name, Double price) {
             this.price = price;
             this.name = name;
         }
 
-        double getPrice() {
+        Double getPrice() {
             return price;
         }
 
-        void setPrice(double price) {
+        void setPrice(Double price) {
             this.price = price;
         }
 
@@ -116,8 +120,8 @@ public class PriceList {
 
         @Override
         public String toString() {
+            if (this.price == null) return this.name + " - " + "Цена еще не задана";
             return this.name + " - " + this.price;
         }
     }
 }
-
