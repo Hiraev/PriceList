@@ -145,9 +145,13 @@ public class Tests {
         assertEquals(productNameSeven, priceList.getProductName(1007));
         //Удаляем этот продукт
         assertEquals(true, priceList.removeProduct(1007));
+        //Снова проверяем его наличие путем запроса имени
         try {
-            //Снова проверяем его наличие путем запроса имени
             priceList.getProductName(1007);
+            fail();
+        } catch (NoSuchElementException e) {
+        }
+        try {
             priceList.removeProduct(74892);
             fail();
         } catch (NoSuchElementException e) {
