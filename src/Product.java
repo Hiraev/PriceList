@@ -11,28 +11,28 @@ class Product {
     private Double price;
     private String name;
 
-    Product(String name) {
+    public Product(String name) {
         this.name = name;
     }
 
-    Product(String name, Double price) {
+    public Product(String name, Double price) {
         this.price = price;
         this.name = name;
     }
 
-    Double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    void setPrice(Double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
