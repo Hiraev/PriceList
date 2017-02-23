@@ -15,7 +15,11 @@ import java.util.TreeMap;
  */
 
 public final class PriceList {
-    private final Map<Long, Product> productMap = new TreeMap<>();
+    private final Map<Long, Product> productMap;
+
+    public PriceList() {
+        productMap = new TreeMap<>();
+    }
 
     public boolean add(long id, String name, double price) {
         if (price < 0) throw new IllegalArgumentException();
@@ -66,22 +70,23 @@ public final class PriceList {
         return true;
     }
 
-
     public double calculate(Pair<Long, Integer>... list) {
         double price = 0;
         for (Pair<Long, Integer> product : list) {
-            int quantity = product.getValue();
             long key = product.getKey();
-            if (!productMap.containsKey(key)) throw new NoSuchElementException();
-            Product itProduct = productMap.get(key);
-            Double itPrice = itProduct.getPrice();
-            if (itPrice == null) throw new IllegalStateException("Цена для "
-                    + itProduct.getName() + " еще не задана");
-            if (productMap.containsKey(key)) {
-                price += itPrice * quantity;
-            }
+            int amount = product.getValue();
+            price += priceOfOneProduct(key, amount);
         }
         return price;
+    }
+
+    private double priceOfOneProduct(long id, int amount) {
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
+        Product itProduct = productMap.get(id);
+        Double itPrice = itProduct.getPrice();
+        if (itPrice == null) throw new IllegalStateException("Цена для "
+                + itProduct.getName() + " еще не задана");
+        return itPrice * amount;
     }
 
     public int getSize() {
