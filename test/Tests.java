@@ -175,6 +175,12 @@ public class Tests {
     }
 
     @Test
+    public void calculateTwo(){
+        assertEquals(38.00, priceList.calculate(1004,2), 1e-3);
+        assertEquals(1199.97, priceList.calculate(1001,3), 1e-3);
+    }
+
+    @Test
     public void getSize() {
         assertEquals(7, priceList.getSize());
     }

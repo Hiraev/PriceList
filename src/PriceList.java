@@ -1,8 +1,8 @@
 import javafx.util.Pair;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
 
 /**
  * ---------------------------------------
@@ -18,7 +18,7 @@ public final class PriceList {
     private final Map<Long, Product> productMap;
 
     public PriceList() {
-        productMap = new TreeMap<>();
+        productMap = new HashMap<>();
     }
 
     public boolean add(long id, String name, double price) {
@@ -68,6 +68,10 @@ public final class PriceList {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
         productMap.remove(id);
         return true;
+    }
+
+    public double calculate(long id, int quantity) {
+        return priceOfOneProduct(id, quantity);
     }
 
     public double calculate(Pair<Long, Integer>... list) {
