@@ -89,9 +89,7 @@ public final class PriceList {
         private String name;
 
         private Product(String name, String price) {
-            BigDecimal decimal = new BigDecimal(price);
-            if (decimal.signum() == -1) throw new IllegalArgumentException();
-            this.price = decimal;
+            this.price = convert(price);
             this.name = name;
         }
 
@@ -104,9 +102,19 @@ public final class PriceList {
         }
 
         public void setPrice(String price) {
+            this.price = convert(price);
+        }
+
+        private BigDecimal convert(String price) {
+            String[] str = price.split("\\.");
+            if (str.length < 2) {
+                price += ".00";
+            } else if (str[1].length() > 2) {
+                throw new IllegalArgumentException("Копейки должны занимать не более 2-ух символов");
+            } else if (str[1].length() < 2) price += "0";
             BigDecimal decimal = new BigDecimal(price);
             if (decimal.signum() == -1) throw new IllegalArgumentException();
-            this.price = decimal;
+            return decimal;
         }
 
         public void setName(String name) {
