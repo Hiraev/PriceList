@@ -83,6 +83,24 @@ public final class PriceList {
         return productMap.size();
     }
 
+    @Override
+    public int hashCode() {
+        return productMap.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object another) {
+        if (this == another) return true;
+        if (another instanceof PriceList) {
+            return this.productMap.equals(((PriceList) another).productMap);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return productMap.toString();
+    }
 
     private static class Product {
         private BigDecimal price;
@@ -123,6 +141,29 @@ public final class PriceList {
 
         private BigDecimal calculate(int value) {
             return price.multiply(new BigDecimal(value));
+        }
+
+        @Override
+        public int hashCode() {
+            return price.hashCode() * 13 + name.hashCode() * 31;
+        }
+
+        @Override
+        public boolean equals(Object another) {
+            if (this == another) return true;
+            if (another instanceof Product) {
+                if (this.name.equals(((Product) another).name) &
+                        this.price.equals(((Product) another).price)) return true;
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            String[] str = price.toString().split("\\.");
+            String rubles = str[0];
+            String copecks = str[1];
+            return name + " - " + rubles + " руб. " + copecks + " коп.";
         }
     }
 }
