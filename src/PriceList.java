@@ -106,6 +106,7 @@ public final class PriceList {
         }
 
         private BigDecimal convert(String price) {
+            if (price.contains("-")) throw new IllegalArgumentException();
             String[] str = price.split("\\.");
             if (str.length < 2) {
                 price += ".00";
@@ -113,7 +114,6 @@ public final class PriceList {
                 throw new IllegalArgumentException("Копейки должны занимать не более 2-ух символов");
             } else if (str[1].length() < 2) price += "0";
             BigDecimal decimal = new BigDecimal(price);
-            if (decimal.signum() == -1) throw new IllegalArgumentException();
             return decimal;
         }
 
