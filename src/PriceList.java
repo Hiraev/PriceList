@@ -1,5 +1,4 @@
-import javafx.util.Pair;
-
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -21,17 +20,10 @@ public final class PriceList {
         productMap = new HashMap<>();
     }
 
-    public boolean add(long id, String name, double price) {
-        if (price < 0) throw new IllegalArgumentException();
-        if (productMap.containsKey(id)) return false;
+    public void add(long id, String name, String price) {
+        //Заменить исключение!!!
+        if (productMap.containsKey(id)) throw new NoSuchElementException();
         productMap.put(id, new Product(name, price));
-        return true;
-    }
-
-    public boolean add(long id, String name) {
-        if (productMap.containsKey(id)) return false;
-        productMap.put(id, new Product(name));
-        return true;
     }
 
     public String getProduct(long id) {
@@ -44,56 +36,85 @@ public final class PriceList {
         return productMap.get(id).getName();
     }
 
-    public double getProductPrice(long id) {
+    public String getProductPrice(long id) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
-        if (productMap.get(id).getPrice() == null) throw new IllegalStateException("Цена для "
-                + productMap.get(id).getName() + " еще не задана");
         return (productMap.get(id)).getPrice();
     }
 
-    public boolean setProductName(long id, String name) {
+    public void setProductName(long id, String name) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
         (productMap.get(id)).setName(name);
-        return true;
     }
 
-    public boolean setProductPrice(long id, Double price) {
+    public void setProductPrice(long id, String price) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
-        if (price < 0) return false;
         (productMap.get(id)).setPrice(price);
-        return true;
     }
 
-    public boolean removeProduct(long id) {
+    public void removeProduct(long id) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
         productMap.remove(id);
-        return true;
     }
 
-    public double calculate(long id, int quantity) {
-        return priceOfOneProduct(id, quantity);
+    public boolean contains(long id) {
+        return productMap.containsKey(id);
     }
 
-    public double calculate(Pair<Long, Integer>... list) {
-        double price = 0;
+    public String calculate(long id, int quantity) {
+        return priceOfOneProduct(id, quantity).toString();
+    }
+
+    public String calculate(Pair<Long, Integer>... list) {
+        BigDecimal price = new BigDecimal("0");
         for (Pair<Long, Integer> product : list) {
             long key = product.getKey();
             int amount = product.getValue();
-            price += priceOfOneProduct(key, amount);
+            price = price.add(priceOfOneProduct(key, amount));
         }
-        return price;
+        return price.toString();
     }
 
-    private double priceOfOneProduct(long id, int amount) {
+    private BigDecimal priceOfOneProduct(long id, int amount) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
-        Product itProduct = productMap.get(id);
-        Double itPrice = itProduct.getPrice();
-        if (itPrice == null) throw new IllegalStateException("Цена для "
-                + itProduct.getName() + " еще не задана");
-        return itPrice * amount;
+        return productMap.get(id).calculate(amount);
     }
 
     public int getSize() {
         return productMap.size();
+    }
+
+
+    private static class Product {
+        private BigDecimal price;
+        private String name;
+
+        private Product(String name, String price) {
+            BigDecimal decimal = new BigDecimal(price);
+            if (decimal.signum() == -1) throw new IllegalArgumentException();
+            this.price = decimal;
+            this.name = name;
+        }
+
+        private String getPrice() {
+            return price.toString();
+        }
+
+        private String getName() {
+            return name;
+        }
+
+        public void setPrice(String price) {
+            BigDecimal decimal = new BigDecimal(price);
+            if (decimal.signum() == -1) throw new IllegalArgumentException();
+            this.price = decimal;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        private BigDecimal calculate(int value) {
+            return price.multiply(new BigDecimal(value));
+        }
     }
 }
