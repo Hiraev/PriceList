@@ -61,11 +61,11 @@ public class Tests {
 
     @Test
     public void contains() {
-        assertEquals(true, priceList.contains(idOne));
-        assertEquals(true, priceList.contains(idTwo));
-        assertEquals(true, priceList.contains(idThree));
-        assertEquals(true, priceList.contains(idFour));
-        assertEquals(false, priceList.contains(idFive));
+        assertTrue(priceList.contains(idOne));
+        assertTrue(priceList.contains(idTwo));
+        assertTrue(priceList.contains(idThree));
+        assertTrue(priceList.contains(idFour));
+        assertFalse(priceList.contains(idFive));
     }
 
     @Test
@@ -162,9 +162,9 @@ public class Tests {
 
     @Test
     public void removeProduct() {
-        assertEquals(true, priceList.contains(idOne));
+        assertTrue(priceList.contains(idOne));
         priceList.removeProduct(idOne);
-        assertEquals(false, priceList.contains(idOne));
+        assertFalse(priceList.contains(idOne));
         try {
             priceList.removeProduct(1234133);
             fail();
@@ -180,8 +180,8 @@ public class Tests {
         priceList2.add(idOne, productNameOne, priceOne);
         PriceList priceList3 = new PriceList();
         priceList3.add(idOne, productNameOne, priceThree);
-        assertEquals(true, priceList1.equals(priceList2));
-        assertEquals(false, priceList1.equals(priceList3));
+        assertTrue(priceList1.equals(priceList2));
+        assertFalse(priceList1.equals(priceList3));
     }
 
     @Test
