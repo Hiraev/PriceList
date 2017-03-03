@@ -21,8 +21,7 @@ public final class PriceList {
     }
 
     public void add(long id, String name, String price) {
-        //Заменить исключение!!!
-        if (productMap.containsKey(id)) throw new NoSuchElementException();
+        if (productMap.containsKey(id)) throw new IllegalArgumentException("Такой id уже имеется");
         productMap.put(id, new Product(name, price));
     }
 
