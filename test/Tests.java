@@ -55,7 +55,7 @@ public class Tests {
         try {
             priceList.add(idOne, productNameOne, priceOne);
             fail();
-        } catch (NoSuchElementException e) {
+        } catch (IllegalArgumentException e) {
         }
     }
 
