@@ -1,4 +1,3 @@
-import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,63 +18,62 @@ import static org.junit.Assert.*;
 public class Tests {
 
     PriceList priceList = new PriceList();
-    //Покупки
-    Pair<Long, Integer> firstPurchase = new Pair<>(1001L, 2);
-    Pair<Long, Integer> secondPurchase = new Pair<>(1002L, 5);
-    Pair<Long, Integer> thirdPurchase = new Pair<>(1003L, 3);
-    Pair<Long, Integer> fourthPurchase = new Pair<>(173L, 3);
 
-    //Продукты
     String productNameOne = "Торт Прага 860г.";
     String productNameTwo = "Хлебцы Dr.Korner 7-злаков 100г.";
     String productNameThree = "Булочка с маком";
     String productNameFour = "Булочка веснушка";
     String productNameFive = "Сдоба \"Ромашка\"";
     String productNameSix = "Беляш";
-    String productNameSeven = "Плюшка московская";
 
-    double priceOne = 399.99;
-    double priceTwo = 49.90;
-    double priceThree = 15.50;
-    double priceFour = 19.00;
-    double priceFive = 20.00;
-    double priceSix = 19.80;
+    String priceOne = "399.99";
+    String priceTwo = "49.9";
+    String priceThree = "15.5";
+    String priceFour = "19";
 
+    long idOne = 1001;
+    long idTwo = 1002;
+    long idThree = 1003;
+    long idFour = 1004;
+    long idFive = 1005;
+
+    Pair<Long, Integer> firstPurchase = new Pair<>(idOne, 2); //799.98
+    Pair<Long, Integer> secondPurchase = new Pair<>(idTwo, 5); //249.50
+    Pair<Long, Integer> thirdPurchase = new Pair<>(idThree, 3); //46.50
+    Pair<Long, Integer> fourthPurchase = new Pair<>(idFive, 3);
 
     @Before
     public void setup() {
-        priceList.add(1001, productNameOne, priceOne);
-        priceList.add(1002, productNameTwo, priceTwo);
-        priceList.add(1003, productNameThree, priceThree);
-        priceList.add(1004, productNameFour, priceFour);
-        priceList.add(1005, productNameFive);
-        priceList.add(1006, productNameSix);
-        priceList.add(1007, productNameSeven);
+        priceList.add(idOne, productNameOne, priceOne);
+        priceList.add(idTwo, productNameTwo, priceTwo);
+        priceList.add(idThree, productNameThree, priceThree);
+        priceList.add(idFour, productNameFour, priceFour);
     }
 
     @Test
-    public void addToPriceList() {
-        //При успешном добавлении получаем нолик
-        assertEquals(true, priceList.add(1011, productNameOne, 399.99));
-        assertEquals(true, priceList.add(1022, productNameTwo, 49.90));
-        assertEquals(true, priceList.add(1033, productNameThree, 15.50));
-        assertEquals(true, priceList.add(1044, productNameFour, 19.00));
-        //Случай, когда Id уже занят каким-то продуктом
-        assertEquals(false, priceList.add(1004, "Этот товар не добавится", 0.00));
+    public void add() {
+        try {
+            priceList.add(idOne, productNameOne, priceOne);
+            fail();
+        } catch (IllegalArgumentException e) {
+        }
     }
 
     @Test
-    public void addToPriceListWithoutPrice() {
-        assertEquals(true, priceList.add(1009, "Безымяннй товар"));
-        assertEquals(false, priceList.add(1007, productNameSeven));
+    public void contains() {
+        assertTrue(priceList.contains(idOne));
+        assertTrue(priceList.contains(idTwo));
+        assertTrue(priceList.contains(idThree));
+        assertTrue(priceList.contains(idFour));
+        assertFalse(priceList.contains(idFive));
     }
 
     @Test
     public void getProductName() {
-        assertEquals(productNameOne, priceList.getProductName(1001));
-        assertEquals(productNameTwo, priceList.getProductName(1002));
-        assertEquals(productNameThree, priceList.getProductName(1003));
-        assertEquals(productNameFour, priceList.getProductName(1004));
+        assertEquals(productNameOne, priceList.getProductName(idOne));
+        assertEquals(productNameTwo, priceList.getProductName(idTwo));
+        assertEquals(productNameThree, priceList.getProductName(idThree));
+        assertEquals(productNameFour, priceList.getProductName(idFour));
         try {
             //Пытаемся получить имя по ID, которого нет
             priceList.getProductName(123);
@@ -86,15 +84,10 @@ public class Tests {
 
     @Test
     public void getProductPrice() {
-        assertEquals(priceOne, priceList.getProductPrice(1001), 1e-3);
-        assertEquals(priceTwo, priceList.getProductPrice(1002), 1e-3);
-        assertEquals(priceThree, priceList.getProductPrice(1003), 1e-3);
-        assertEquals(priceFour, priceList.getProductPrice(1004), 1e-3);
-        try {
-            priceList.getProductPrice(1005);
-            fail();
-        } catch (IllegalStateException e) {
-        }
+        assertEquals(priceOne, priceList.getProductPrice(idOne));
+        assertEquals(priceTwo + "0", priceList.getProductPrice(idTwo));
+        assertEquals(priceThree + "0", priceList.getProductPrice(idThree));
+        assertEquals(priceFour + ".00", priceList.getProductPrice(idFour));
         try {
             priceList.getProductPrice(4533);
             fail();
@@ -104,10 +97,9 @@ public class Tests {
 
     @Test
     public void getProduct() {
-        assertEquals(productNameOne + " - " + priceOne, priceList.getProduct(1001));
-        assertEquals(productNameTwo + " - " + priceTwo, priceList.getProduct(1002));
-        assertEquals(productNameThree + " - " + priceThree, priceList.getProduct(1003));
-        assertEquals(productNameFive + " - Цена еще не задана", priceList.getProduct(1005));
+        assertEquals(productNameOne + " - 399 руб. 99 коп.", priceList.getProduct(idOne));
+        assertEquals(productNameTwo + " - 49 руб. 90 коп.", priceList.getProduct(idTwo));
+        assertEquals(productNameThree + " - 15 руб. 50 коп.", priceList.getProduct(idThree));
         try {
             priceList.getProduct(12345677);
             fail();
@@ -116,57 +108,10 @@ public class Tests {
     }
 
     @Test
-    public void setProductPrice() {
-        assertEquals(true, priceList.setProductPrice(1005, priceFive));
-        assertEquals(priceFive, priceList.getProductPrice(1005), 1e-3);
-        assertEquals(true, priceList.setProductPrice(1006, priceSix));
-        assertEquals(priceSix, priceList.getProductPrice(1006), 1e-3);
-        assertEquals(false, priceList.setProductPrice(1007, -19.0));
-        try {
-            priceList.setProductPrice(1999, 0.0);
-            fail();
-        } catch (NoSuchElementException e) {
-        }
-    }
-
-    @Test
-    public void setProductName() {
-        assertEquals(true, priceList.setProductName(1001, productNameFour));
-        try {
-            priceList.setProductName(9999, "Такого id там нет");
-            fail();
-        } catch (NoSuchElementException e) {
-        }
-    }
-
-    @Test
-    public void removeProduct() {
-        //Проверяем наличие продукта
-        assertEquals(productNameSeven, priceList.getProductName(1007));
-        //Удаляем этот продукт
-        assertEquals(true, priceList.removeProduct(1007));
-        //Снова проверяем его наличие путем запроса имени
-        try {
-            priceList.getProductName(1007);
-            fail();
-        } catch (NoSuchElementException e) {
-        }
-        try {
-            priceList.removeProduct(74892);
-            fail();
-        } catch (NoSuchElementException e) {
-        }
-    }
-
-    @Test
     public void calculate() {
-        //Сумма покупок
-        double sum1 = priceOne * 2 + priceTwo * 5 + priceThree * 3;
-        double sum2 = priceOne * 2 + priceTwo * 5;
-        double sum3 = priceTwo * 5;
-        assertEquals(sum1, priceList.calculate(firstPurchase, secondPurchase, thirdPurchase), 1e-3);
-        assertEquals(sum2, priceList.calculate(firstPurchase, secondPurchase), 1e-3);
-        assertEquals(sum3, priceList.calculate(secondPurchase), 1e-3);
+        assertEquals("1095.98", priceList.calculate(firstPurchase, secondPurchase, thirdPurchase));
+        assertEquals("1049.48", priceList.calculate(firstPurchase, secondPurchase));
+        assertEquals("249.50", priceList.calculate(secondPurchase));
         try {
             priceList.calculate(fourthPurchase);
             fail();
@@ -175,7 +120,77 @@ public class Tests {
     }
 
     @Test
+    public void calculateTwo() {
+        assertEquals("38.00", priceList.calculate(idFour, 2));
+        assertEquals("1199.97", priceList.calculate(idOne, 3));
+    }
+
+    @Test
+    public void setProductName() {
+        assertEquals(productNameOne, priceList.getProductName(idOne));
+        priceList.setProductName(idOne, productNameFive);
+        assertEquals(productNameFive, priceList.getProductName(idOne));
+        assertEquals(productNameTwo, priceList.getProductName(idTwo));
+        priceList.setProductName(idTwo, productNameSix);
+        assertEquals(productNameSix, priceList.getProductName(idTwo));
+        try {
+            priceList.setProductName(19823, productNameFive);
+            fail();
+        } catch (NoSuchElementException e) {
+        }
+    }
+
+    @Test
+    public void setProductPrice() {
+        String priceFive = "-20.00";
+        String priceSix = "19.806";
+        assertEquals(priceOne, priceList.getProductPrice(idOne));
+        priceList.setProductPrice(idOne, priceFour);
+        assertEquals(priceFour + ".00", priceList.getProductPrice(idOne));
+        try {
+            priceList.setProductPrice(idTwo, priceFive);
+            fail();
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            priceList.setProductPrice(idTwo, priceSix);
+            fail();
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
+    @Test
+    public void removeProduct() {
+        assertTrue(priceList.contains(idOne));
+        priceList.removeProduct(idOne);
+        assertFalse(priceList.contains(idOne));
+        try {
+            priceList.removeProduct(1234133);
+            fail();
+        } catch (NoSuchElementException e) {
+        }
+    }
+
+    @Test
+    public void equals() {
+        PriceList priceList1 = new PriceList();
+        priceList1.add(idOne, productNameOne, priceOne);
+        PriceList priceList2 = new PriceList();
+        priceList2.add(idOne, productNameOne, priceOne);
+        PriceList priceList3 = new PriceList();
+        priceList3.add(idOne, productNameOne, priceThree);
+        assertTrue(priceList1.equals(priceList2));
+        assertFalse(priceList1.equals(priceList3));
+    }
+
+    @Test
     public void getSize() {
-        assertEquals(7, priceList.getSize());
+        assertEquals(4, priceList.getSize());
+    }
+
+    @Test
+    public void toStringTest() {
+        System.out.println(priceList.toString());
     }
 }

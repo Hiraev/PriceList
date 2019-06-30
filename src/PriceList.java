@@ -1,8 +1,7 @@
-import javafx.util.Pair;
-
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.TreeMap;
 
 /**
  * ---------------------------------------
@@ -15,19 +14,15 @@ import java.util.TreeMap;
  */
 
 public final class PriceList {
-    private final Map<Long, Product> productMap = new TreeMap<>();
+    private final Map<Long, Product> productMap;
 
-    public boolean add(long id, String name, double price) {
-        if (price < 0) throw new IllegalArgumentException();
-        if (productMap.containsKey(id)) return false;
-        productMap.put(id, new Product(name, price));
-        return true;
+    public PriceList() {
+        productMap = new HashMap<>();
     }
 
-    public boolean add(long id, String name) {
-        if (productMap.containsKey(id)) return false;
-        productMap.put(id, new Product(name));
-        return true;
+    public void add(long id, String name, String price) {
+        if (productMap.containsKey(id)) throw new IllegalArgumentException("Такой id уже имеется");
+        productMap.put(id, new Product(name, price));
     }
 
     public String getProduct(long id) {
@@ -40,88 +35,134 @@ public final class PriceList {
         return productMap.get(id).getName();
     }
 
-    public double getProductPrice(long id) {
+    public String getProductPrice(long id) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
-        if (productMap.get(id).getPrice() == null) throw new IllegalStateException("Цена для "
-                + productMap.get(id).getName() + " еще не задана");
         return (productMap.get(id)).getPrice();
     }
 
-    public boolean setProductName(long id, String name) {
+    public void setProductName(long id, String name) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
         (productMap.get(id)).setName(name);
-        return true;
     }
 
-    public boolean setProductPrice(long id, Double price) {
+    public void setProductPrice(long id, String price) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
-        if (price < 0) return false;
         (productMap.get(id)).setPrice(price);
-        return true;
     }
 
-    public boolean removeProduct(long id) {
+    public void removeProduct(long id) {
         if (!productMap.containsKey(id)) throw new NoSuchElementException();
         productMap.remove(id);
-        return true;
     }
 
+    public boolean contains(long id) {
+        return productMap.containsKey(id);
+    }
 
-    public double calculate(Pair<Long, Integer>... list) {
-        double price = 0;
+    public String calculate(long id, int quantity) {
+        return priceOfOneProduct(id, quantity).toString();
+    }
+
+    public String calculate(Pair<Long, Integer>... list) {
+        BigDecimal price = new BigDecimal("0");
         for (Pair<Long, Integer> product : list) {
-            int quantity = product.getValue();
             long key = product.getKey();
-            if (!productMap.containsKey(key)) throw new NoSuchElementException();
-            Product itProduct = productMap.get(key);
-            Double itPrice = itProduct.getPrice();
-            if (itPrice == null) throw new IllegalStateException("Цена для "
-                    + itProduct.getName() + " еще не задана");
-            if (productMap.containsKey(key)) {
-                price += itPrice * quantity;
-            }
+            int amount = product.getValue();
+            price = price.add(priceOfOneProduct(key, amount));
         }
-        return price;
+        return price.toString();
+    }
+
+    private BigDecimal priceOfOneProduct(long id, int amount) {
+        if (!productMap.containsKey(id)) throw new NoSuchElementException();
+        return productMap.get(id).calculate(amount);
     }
 
     public int getSize() {
         return productMap.size();
     }
 
-    //Вспомогательный класс
-    private class Product {
-        private Double price;
+    @Override
+    public int hashCode() {
+        return productMap.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object another) {
+        if (this == another) return true;
+        if (another instanceof PriceList) {
+            return this.productMap.equals(((PriceList) another).productMap);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return productMap.toString();
+    }
+
+    private static class Product {
+        private BigDecimal price;
         private String name;
 
-        Product(String name) {
+        private Product(String name, String price) {
+            this.price = convert(price);
             this.name = name;
         }
 
-        Product(String name, Double price) {
-            this.price = price;
-            this.name = name;
+        private String getPrice() {
+            return price.toString();
         }
 
-        Double getPrice() {
-            return price;
-        }
-
-        void setPrice(Double price) {
-            this.price = price;
-        }
-
-        String getName() {
+        private String getName() {
             return name;
         }
 
-        void setName(String name) {
+        public void setPrice(String price) {
+            this.price = convert(price);
+        }
+
+        private BigDecimal convert(String price) {
+            if (price.contains("-")) throw new IllegalArgumentException();
+            String[] str = price.split("\\.");
+            if (str.length < 2) {
+                price += ".00";
+            } else if (str[1].length() > 2) {
+                throw new IllegalArgumentException("Копейки должны занимать не более 2-ух символов");
+            } else if (str[1].length() < 2) price += "0";
+            BigDecimal decimal = new BigDecimal(price);
+            return decimal;
+        }
+
+        public void setName(String name) {
             this.name = name;
+        }
+
+        private BigDecimal calculate(int value) {
+            return price.multiply(new BigDecimal(value));
+        }
+
+        @Override
+        public int hashCode() {
+            return price.hashCode() * 13 + name.hashCode() * 31;
+        }
+
+        @Override
+        public boolean equals(Object another) {
+            if (this == another) return true;
+            if (another instanceof Product) {
+                if (this.name.equals(((Product) another).name) &
+                        this.price.equals(((Product) another).price)) return true;
+            }
+            return false;
         }
 
         @Override
         public String toString() {
-            if (this.price == null) return this.name + " - " + "Цена еще не задана";
-            return this.name + " - " + this.price;
+            String[] str = price.toString().split("\\.");
+            String rubles = str[0];
+            String copecks = str[1];
+            return name + " - " + rubles + " руб. " + copecks + " коп.";
         }
     }
 }
